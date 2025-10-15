@@ -9,3 +9,5 @@ Clone or download the project folder and place all files in the same directory.
 
 Install dependencies
 pip install -r requirements.txt
+
+Run the app.py file
