@@ -1,0 +1,514 @@
+/* ResuMate - Dark Theme with Gradient Buttons */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.form-section, .preview-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-section h2, .preview-section h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+/* Style Selector */
+.style-selector {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.style-selector h3 {
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.style-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.style-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.style-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.style-option input[type="radio"] {
+    margin-right: 8px;
+}
+
+.style-option input[type="radio"]:checked + span {
+    color: #667eea;
+    font-weight: bold;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Gradient Buttons */
+.gradient-btn, button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-btn:hover, button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.gradient-btn:active, button:active {
+    transform: translateY(0);
+}
+
+.ai-btn {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    font-size: 12px;
+    padding: 8px 16px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.generate-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    margin-top: 25px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.demo-btn {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    margin: 20px auto;
+    display: block;
+}
+
+.print-btn {
+    width: 100%;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Sections */
+.ats-section, .interview-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 25px;
+    border-left: 4px solid #667eea;
+}
+
+.ats-section h3, .interview-section h3 {
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+/* ATS Results */
+.ats-score {
+    background: rgba(72, 187, 120, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border-left: 4px solid #48bb78;
+    backdrop-filter: blur(5px);
+}
+
+.ats-score.okay {
+    background: rgba(255, 193, 7, 0.1);
+    border-left-color: #ffc107;
+}
+
+.ats-score.poor {
+    background: rgba(220, 53, 69, 0.1);
+    border-left-color: #dc3545;
+}
+
+.ats-score h4 {
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.ats-score p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 5px 0;
+}
+
+/* Resume Preview */
+.preview-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.resume-container {
+    flex: 1;
+    background: #ffffff;
+    color: #333;
+    padding: 30px;
+    border-radius: 10px;
+    min-height: 700px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-style: italic;
+}
+
+/* Resume Styles */
+.resume-header {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+}
+
+.resume-header h1 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 2.2rem;
+    text-shadow: none;
+}
+
+.contact-info {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+.resume-section {
+    margin-bottom: 25px;
+}
+
+.resume-section h3 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.experience-content div {
+    margin-bottom: 8px;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+
+/* Professional Style */
+.resume-container.professional .resume-header {
+    text-align: center;
+    border-bottom: 2px solid #2c3e50;
+}
+
+.resume-container.professional .resume-section h3 {
+    border-bottom: 1px solid #bdc3c7;
+    padding-bottom: 5px;
+}
+
+/* Modern Style */
+.resume-container.modern .resume-header {
+    text-align: left;
+    border-bottom: 3px solid #3498db;
+}
+
+.resume-container.modern .resume-section h3 {
+    color: #3498db;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 8px;
+}
+
+.resume-container.modern .resume-header h1 {
+    color: #3498db;
+}
+
+/* Creative Style */
+.resume-container.creative .resume-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    margin: -30px -30px 25px -30px;
+    text-align: center;
+}
+
+.resume-container.creative .resume-header h1,
+.resume-container.creative .contact-info {
+    color: white;
+}
+
+.resume-container.creative .resume-section h3 {
+    color: #667eea;
+    border-left: 4px solid #667eea;
+    padding-left: 12px;
+    border-bottom: none;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    color: #ffffff;
+    margin: 0;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.question-container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.question-container h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.question-container p {
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.question-container textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.feedback-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #43e97b;
+}
+
+.feedback-item h4 {
+    color: #43e97b;
+    margin-bottom: 8px;
+}
+
+.feedback-item p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .style-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
