@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ResuMate - AI Resume Builder</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/static/Logo.png" alt="ResuMate Logo" class="logo">
+            <h1>ResuMate</h1>
+            <p><em>AI-Powered Resume Builder</em></p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left Panel - Form -->
+            <div class="form-section">
+                <h2>Enter Your Details</h2>
+                
+                <!-- Resume Style Selector -->
+                <div class="style-selector">
+                    <h3>Choose Resume Style:</h3>
+                    <div class="style-options">
+                        <label class="style-option">
+                            <input type="radio" name="resume_style" value="professional" checked>
+                            <span>📋 Professional</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="resume_style" value="modern">
+                            <span>🎨 Modern</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="resume_style" value="creative">
+                            <span>✨ Creative</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <form id="resumeForm">
+                    <div class="form-group">
+                        <label>Full Name:</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="tel" id="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Professional Summary:</label>
+                        <textarea id="summary" rows="3" placeholder="Brief summary of your experience..."></textarea>
+                        <button type="button" class="ai-btn" onclick="improveText('summary')">✨ AI Improve</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Work Experience:</label>
+                        <textarea id="experience" rows="5" placeholder="List your work experience with bullet points..."></textarea>
+                        <button type="button" class="ai-btn" onclick="improveText('experience')">✨ AI Improve</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Education:</label>
+                        <textarea id="education" rows="2" placeholder="Your education background..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Skills:</label>
+                        <input type="text" id="skills" placeholder="JavaScript, Python, React, etc.">
+                    </div>
+                    
+                    <!-- ATS Section -->
+                    <div class="ats-section">
+                        <h3>🎯 ATS Optimization</h3>
+                        <textarea id="job_description" rows="4" placeholder="Paste job description here for ATS analysis..."></textarea>
+                        <button type="button" class="gradient-btn" onclick="checkATS()">Check ATS Score</button>
+                        <div id="ats-result"></div>
+                    </div>
+                    
+                    <!-- Interview Section -->
+                    <div class="interview-section">
+                        <h3>🎤 Mock Interview</h3>
+                        <input type="text" id="job_title" placeholder="Target Job Title (e.g. Software Developer)">
+                        <button type="button" class="gradient-btn" onclick="showInterviewModal()">Start Mock Interview</button>
+                    </div>
+                    
+                    <button type="button" class="generate-btn gradient-btn" onclick="generateResume()">Generate Resume</button>
+                </form>
+            </div>
+            
+            <!-- Right Panel - Preview -->
+            <div class="preview-section">
+                <h2>Live Preview</h2>
+                <div id="resume-preview" class="resume-container professional">
+                    <div class="placeholder">
+                        <p>📝 Fill out the form to see your resume preview</p>
+                    </div>
+                </div>
+                <button onclick="printResume()" class="print-btn gradient-btn">📄 Print/Save Resume</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interview Modal -->
+    <div id="interviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎤 Mock Interview</h2>
+                <span class="close" onclick="closeInterviewModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div id="interview-setup">
+                    <p>Let's start your mock interview! We'll generate questions based on your target role.</p>
+                    <input type="text" id="modal-job-title" placeholder="Enter job title" style="width: 100%; margin-bottom: 15px;">
+                    <button class="gradient-btn" onclick="generateInterviewQuestions()">Generate Questions</button>
+                </div>
+                
+                <div id="interview-questions-container" style="display: none;">
+                    <div id="interview-questions"></div>
+                    <button class="gradient-btn" onclick="submitAnswers()" id="submit-answers-btn" style="display: none;">Get AI Feedback</button>
+                </div>
+                
+                <div id="interview-feedback" style="display: none;">
+                    <h3>📋 Your Feedback</h3>
+                    <div id="feedback-content"></div>
+                    <button class="gradient-btn" onclick="restartInterview()">Start New Interview</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let currentQuestions = [];
+    
+    // Resume style handling
+    $('input[name="resume_style"]').change(function() {
+        const selectedStyle = $(this).val();
+        $('#resume-preview').removeClass('professional modern creative').addClass(selectedStyle);
+        updatePreview();
+    });
+    
+    // Fixed JavaScript with better error handling
+    function improveText(field) {
+        const text = document.getElementById(field).value;
+        if (!text.trim()) {
+            alert('Please enter some text first!');
+            return;
+        }
+        
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = '⏳ Improving...';
+        
+        const formData = {};
+        formData[field] = text;
+        formData['name'] = $('#name').val();
+        formData['summary'] = $('#summary').val();
+        formData['experience'] = $('#experience').val();
+        
+        $.ajax({
+            url: '/generate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(data) {
+                if (data[field]) {
+                    document.getElementById(field).value = data[field];
+                    updatePreview();
+                    showNotification('✅ AI improved your ' + field + '!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AI improvement failed:', error);
+                showNotification('❌ AI service unavailable, using fallback');
+            },
+            complete: function() {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        });
+    }
+    
+    function checkATS() {
+        const resumeText = $('#summary').val() + ' ' + $('#experience').val() + ' ' + $('#skills').val();
+        const jobDesc = $('#job_description').val();
+        
+        if (!jobDesc.trim()) {
+            alert('Please paste a job description first!');
+            return;
+        }
+        
+        $.ajax({
+            url: '/generate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                'summary': $('#summary').val(),
+                'experience': $('#experience').val(),
+                'skills': $('#skills').val(),
+                'job_description': jobDesc
+            }),
+            success: function(data) {
+                const result = data.ats_score;
+                const scoreClass = result.score >= 70 ? 'good' : result.score >= 50 ? 'okay' : 'poor';
+                
+                $('#ats-result').html(
+                    '<div class="ats-score ' + scoreClass + '">' +
+                    '<h4>🎯 ATS Score: ' + result.score + '%</h4>' +
+                    '<p><strong>Matched Keywords:</strong> ' + result.matches.slice(0, 8).join(', ') + '</p>' +
+                    (result.score < 60 ? '<p><em>💡 Tip: Add more keywords from the job description</em></p>' : '') +
+                    '</div>'
+                );
+            },
+            error: function() {
+                $('#ats-result').html('<p>❌ ATS analysis failed</p>');
+            }
+        });
+    }
+    
+    // Interview Modal Functions
+    function showInterviewModal() {
+        document.getElementById('interviewModal').style.display = 'block';
+        $('#modal-job-title').val($('#job_title').val());
+    }
+    
+    function closeInterviewModal() {
+        document.getElementById('interviewModal').style.display = 'none';
+        restartInterview();
+    }
+    
+    function generateInterviewQuestions() {
+        const jobTitle = $('#modal-job-title').val() || 'Software Developer';
+        
+        $.ajax({
+            url: '/interview',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ 'job_title': jobTitle }),
+            success: function(data) {
+                currentQuestions = data.questions;
+                let html = '<h3>🎤 Interview Questions</h3>';
+                data.questions.forEach(function(q, index) {
+                    html += '<div class="question-container">' +
+                            '<h4>Question ' + (index + 1) + ':</h4>' +
+                            '<p>' + q + '</p>' +
+                            '<textarea id="answer-' + index + '" rows="4" placeholder="Your answer..."></textarea>' +
+                            '</div>';
+                });
+                
+                $('#interview-questions').html(html);
+                $('#interview-setup').hide();
+                $('#interview-questions-container').show();
+                $('#submit-answers-btn').show();
+            },
+            error: function() {
+                showNotification('❌ Failed to generate questions');
+            }
+        });
+    }
+    
+    function submitAnswers() {
+        const answers = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const answer = $('#answer-' + i).val();
+            answers.push(answer);
+        }
+        
+        if (answers.some(function(a) { return !a.trim(); })) {
+            alert('Please answer all questions to get feedback!');
+            return;
+        }
+        
+        $.ajax({
+            url: '/interview_feedback',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                'answers': answers,
+                'job_title': $('#modal-job-title').val()
+            }),
+            success: function(data) {
+                let feedbackHtml = '';
+                data.feedback.forEach(function(feedback, index) {
+                    feedbackHtml += '<div class="feedback-item">' +
+                                   '<h4>Question ' + (index + 1) + ' Feedback:</h4>' +
+                                   '<p>' + feedback + '</p>' +
+                                   '</div>';
+                });
+                
+                $('#feedback-content').html(feedbackHtml);
+                $('#interview-questions-container').hide();
+                $('#interview-feedback').show();
+            },
+            error: function() {
+                showNotification('❌ Failed to get feedback');
+            }
+        });
+    }
+    
+    function restartInterview() {
+        $('#interview-setup').show();
+        $('#interview-questions-container').hide();
+        $('#interview-feedback').hide();
+        $('#submit-answers-btn').hide();
+        currentQuestions = [];
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('interviewModal');
+        if (event.target == modal) {
+            closeInterviewModal();
+        }
+    }
+    
+    function generateResume() {
+        updatePreview();
+        showNotification('✅ Resume generated! Use the print button to save as PDF.');
+    }
+    
+    function updatePreview() {
+        const data = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            summary: $('#summary').val(),
+            experience: $('#experience').val(),
+            education: $('#education').val(),
+            skills: $('#skills').val()
+        };
+        
+        if (!data.name && !data.summary && !data.experience) {
+            return;
+        }
+        
+        let html = '<div class="resume-header">' +
+                   '<h1>' + (data.name || 'Your Name') + '</h1>' +
+                   '<p class="contact-info">' + (data.email || 'email@example.com') + ' | ' + (data.phone || '(555) 123-4567') + '</p>' +
+                   '</div>';
+                   
+        if (data.summary) {
+            html += '<div class="resume-section">' +
+                   '<h3>PROFESSIONAL SUMMARY</h3>' +
+                   '<p>' + data.summary + '</p>' +
+                   '</div>';
+        }
+        
+        if (data.experience) {
+            html += '<div class="resume-section">' +
+                   '<h3>WORK EXPERIENCE</h3>' +
+                   '<div class="experience-content">' + formatExperience(data.experience) + '</div>' +
+                   '</div>';
+        }
+        
+        if (data.education) {
+            html += '<div class="resume-section">' +
+                   '<h3>EDUCATION</h3>' +
+                   '<p>' + data.education.replace(/\n/g, '<br>') + '</p>' +
+                   '</div>';
+        }
+        
+        if (data.skills) {
+            html += '<div class="resume-section">' +
+                   '<h3>SKILLS</h3>' +
+                   '<p>' + data.skills + '</p>' +
+                   '</div>';
+        }
+        
+        $('#resume-preview').html(html);
+    }
+    
+    function formatExperience(text) {
+        return text.split('\n').map(function(line) {
+            line = line.trim();
+            if (!line) return '';
+            if (line.startsWith('•') || line.startsWith('-')) return '<div>' + line + '</div>';
+            return '<div>• ' + line + '</div>';
+        }).join('');
+    }
+    
+function printResume() {
+    const resumeContent = document.getElementById('resume-preview').innerHTML;
+    const name = $('#name').val() || 'Resume';
+    const selectedStyle = $('input[name="resume_style"]:checked').val();
+    
+    if (resumeContent.includes('placeholder')) {
+        alert('Please fill out your information first!');
+        return;
+    }
+    
+    let printStyles = `
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 30px;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .resume-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px;
+        }
+        .resume-header h1 { 
+            margin: 0 0 8px 0; 
+            font-size: 26px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .contact-info {
+            margin: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        .resume-section { 
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        .resume-section h3 { 
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .experience-content {
+            margin-left: 0;
+        }
+        .experience-content div {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+        @media print {
+            body { 
+                margin: 15px;
+                -webkit-print-color-adjust: exact;
+            }
+            .resume-section {
+                break-inside: avoid;
+            }
+        }
+    `;
+    
+    if (selectedStyle === 'modern') {
+        printStyles += `
+            .resume-header { 
+                border-bottom: 3px solid #3498db;
+                padding-bottom: 12px;
+            }
+            .resume-section h3 { 
+                color: #3498db;
+                border-bottom: 2px solid #ecf0f1;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+            }
+            .resume-header h1 {
+                color: #3498db;
+            }
+        `;
+    } else if (selectedStyle === 'creative') {
+        printStyles += `
+            .resume-header { 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                margin: -30px -30px 25px -30px;
+                border-radius: 0;
+            }
+            .resume-header h1, .contact-info { 
+                color: white !important; 
+            }
+            .resume-section h3 { 
+                color: #667eea;
+                border-left: 4px solid #667eea;
+                padding-left: 8px;
+                border-bottom: none;
+            }
+        `;
+    } else {
+        printStyles += `
+            .resume-header { 
+                border-bottom: 2px solid #2c3e50;
+                padding-bottom: 12px;
+            }
+            .resume-section h3 { 
+                border-bottom: 1px solid #bdc3c7;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+            }
+        `;
+    }
+    
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${name} - Resume</title>
+            <meta charset="UTF-8">
+            <style>${printStyles}</style>
+        </head>
+        <body>
+            ${resumeContent}
+    `;
+    
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    
+    setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+    }, 500);
+}
+
+
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = 'position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:15px 20px;border-radius:8px;z-index:1000;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-weight:500;';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(function() {
+            notification.remove();
+        }, 3000);
+    }
+    
+    // Auto-update preview as user types
+    $('input, textarea').on('input', updatePreview);
+    
+    // UPDATED DEMO DATA WITH ARJIT'S DETAILS
+    function loadDemo() {
+        $('#name').val('Arjit Biswas');
+        $('#email').val('arjitisgreat@gmail.com');
+        $('#phone').val('+91-9382974674');
+        $('#summary').val('Dedicated Software Developer with 3+ years of experience in full-stack web development. Proven track record of delivering high-quality applications using modern technologies like React, Node.js, and Python. Strong leadership skills with experience managing development teams and optimizing application performance.');
+        
+        var experienceText = 'Software Developer | Infosys Limited (June 2021 - Present)\n';
+        experienceText += '• Designed and developed responsive web applications using React.js and Node.js\n';
+        experienceText += '• Led a cross-functional team of 3 developers on multiple high-priority projects\n';
+        experienceText += '• Improved application performance by 40% through code optimization and best practices\n';
+        experienceText += '• Implemented CI/CD pipelines reducing deployment time from hours to minutes\n';
+        experienceText += '• Collaborated with product managers and designers to deliver user-centric solutions\n';
+        experienceText += '• Mentored junior developers and conducted code reviews\n\n';
+        experienceText += 'Software Development Intern | Tech Innovation Hub (Jan 2021 - May 2021)\n';
+        experienceText += '• Developed RESTful APIs using Python Flask framework\n';
+        experienceText += '• Assisted in database design and query optimization for PostgreSQL\n';
+        experienceText += '• Participated in agile development methodologies and sprint planning\n';
+        experienceText += '• Created technical documentation for API endpoints and system architecture';
+        $('#experience').val(experienceText);
+        
+        var educationText = 'Bachelor of Science in Computer Science\n';
+        educationText += 'IP University, Delhi (2018 - 2021)\n';
+        educationText += 'CGPA: 8.2/10.0\n\n';
+        educationText += 'Key Coursework: Data Structures & Algorithms, Web Development, Database Management Systems, Software Engineering, Computer Networks, Operating Systems';
+        $('#education').val(educationText);
+        
+        $('#skills').val('JavaScript, React.js, Node.js, Python, Flask, Express.js, MongoDB, PostgreSQL, Git, GitHub, HTML5, CSS3, Bootstrap, RESTful APIs, Docker, AWS, Agile Development');
+        $('#job_title').val('Senior Software Developer');
+        
+        // Set resume style to modern for demo
+        $('input[name="resume_style"][value="modern"]').prop('checked', true);
+        $('#resume-preview').removeClass('professional creative').addClass('modern');
+        
+        updatePreview();
+        showNotification('✅ Arjit\'s professional profile loaded successfully!');
+    }
+    
+    // Add demo button
+    $(document).ready(function() {
+        $('.header').after('<button onclick="loadDemo()" class="demo-btn gradient-btn">Try Demo Data</button>');
+    });
+</script>
+
+</body>
+</html>
