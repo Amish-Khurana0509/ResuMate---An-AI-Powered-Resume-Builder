@@ -37,14 +37,14 @@ def generate_resume():
     job_description = data.get('job_description', '')
     
     improved_summary = improve_text(summary, 'summary') if summary else summary
-    improved_experience = improve_text(experience, 'experience') if experience else experience
+    #improved_experience = improve_text(experience, 'experience') if experience else experience
     
     result = {
         'name': name,
         'email': email,
         'phone': phone,
         'summary': improved_summary,
-        'experience': improved_experience,
+        #'experience': improved_experience,
         'education': education,
         'skills': skills,
         'ats_score': calculate_ats_score(f"{summary} {experience} {skills}", job_description)
@@ -59,18 +59,18 @@ def improve_text(text, section_type):
     if co:
         try:
             if section_type == 'summary':
-                prompt = f"Make this resume summary more professional and impactful. Keep it under 80 words and focus on achievements: {text}"
+                message = f"Make this resume summary more professional and impactful. Remove any markdowns like **,- etc. Keep it under 80 words and focus on achievements: {text}"
             else:
-                prompt = f"Rewrite these work experiences with stronger action verbs and specific achievements. Add numbers where possible: {text}"
+                message = f"Rewrite these work experiences with stronger action verbs and specific achievements. Remove any markdowns like **,- etc. Give straight to the point output. Add numbers where possible: {text}"
             
-            response = co.generate(
-                model='command',
-                prompt=prompt,
+            response = co.chat(
+                model='command-a-03-2025',
+                message=message,
                 max_tokens=180,
                 temperature=0.6
             )
             
-            improved = response.generations[0].text.strip()
+            improved = response.text.strip()
             print(f"AI enhanced {section_type}")
             return improved
             
@@ -128,14 +128,14 @@ def mock_interview():
     
     if co:
         try:
-            response = co.generate(
-                model='command',
-                prompt=f"Create 5 thoughtful interview questions for a {job_title} role. Mix behavioral and technical aspects. Make them realistic and specific to the position:",
+            response = co.chat(
+                model='command-a-03-2025',
+                message=f"Create 5 thoughtful interview questions for a {job_title} role. Remove any markdowns like **,- etc. Give output as questions only. Mix behavioral and technical aspects. Make them realistic and specific to the position:",
                 max_tokens=160,
                 temperature=0.7
             )
             
-            ai_text = response.generations[0].text.strip()
+            ai_text = response.text.strip()
             questions = []
             for line in ai_text.split('\n'):
                 clean_line = line.strip('123456789. ').strip()
@@ -166,14 +166,14 @@ def interview_feedback():
                     feedback_list.append("This question needs an answer to provide meaningful feedback.")
                     continue
                 
-                response = co.generate(
-                    model='command',
-                    prompt=f"You are an experienced hiring manager. Analyze this interview answer for a {job_title} position and give constructive, specific feedback. Be encouraging but honest about areas for improvement: '{answer}'",
+                response = co.chat(
+                    model='command-a-03-2025',
+                    message=f"You are an experienced hiring manager. Analyze this interview answer for a {job_title} position and give constructive, specific feedback. Generate the feedback directly. Be short and crisp (in around 2-3 lines). Be encouraging but honest about areas for improvement: '{answer}'",
                     max_tokens=120,
                     temperature=0.5
                 )
                 
-                ai_feedback = response.generations[0].text.strip()
+                ai_feedback = response.text.strip()
                 if ai_feedback:
                     feedback_list.append(ai_feedback)
                 else:
@@ -204,4 +204,5 @@ def get_basic_feedback(answers):
 if __name__ == '__main__':
     print("Starting ResuMate...")
     app.run(debug=True, port=5000, host='0.0.0.0')
+
 
